@@ -1,5 +1,11 @@
 # linkedin-insight-tag
 
+[![npm version](https://img.shields.io/npm/v/linkedin-insight-tag)](https://www.npmjs.com/package/linkedin-insight-tag)
+[![npm downloads](https://img.shields.io/npm/dm/linkedin-insight-tag)](https://www.npmjs.com/package/linkedin-insight-tag)
+[![license](https://img.shields.io/npm/l/linkedin-insight-tag)](https://github.com/ruban-s/linkedin-insight-tag/blob/main/LICENSE)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/linkedin-insight-tag)](https://bundlephobia.com/package/linkedin-insight-tag)
+[![CI](https://img.shields.io/github/actions/workflow/status/ruban-s/linkedin-insight-tag/ci.yml)](https://github.com/ruban-s/linkedin-insight-tag/actions/workflows/ci.yml)
+
 Lightweight LinkedIn Insight Tag for React and vanilla JS. TypeScript-first, SSR-safe, zero dependencies.
 
 ## Install

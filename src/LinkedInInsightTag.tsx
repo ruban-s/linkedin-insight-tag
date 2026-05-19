@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import type { LinkedInInsightTagProps } from "./types";
 import { injectScript, isPathExcluded } from "./core";
 
+/** React component that loads the LinkedIn Insight Tag with GDPR consent and path exclusion support. */
 export function LinkedInInsightTag({
   partnerId,
   noscript = true,

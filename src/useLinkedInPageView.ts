@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import type { UseLinkedInPageViewOptions } from "./types";
 import { trackEvent } from "./core";
 
+/** React hook that fires a conversion event on each SPA page navigation. */
 export function useLinkedInPageView({
   conversionId,
   pathname,

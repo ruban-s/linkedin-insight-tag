@@ -11,6 +11,7 @@ interface NextScriptProps {
   onLoad?: () => void;
 }
 
+/** Next.js-optimized LinkedIn Insight Tag component using next/script with afterInteractive strategy. */
 export function LinkedInInsightScript({
   partnerId,
   noscript = true,

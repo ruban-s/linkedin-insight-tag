@@ -1,5 +1,6 @@
 import type { RetargetingSegment } from "./types";
 
+/** Match a pathname against retargeting segment definitions and return the first match. */
 export function matchSegment(
   segments: RetargetingSegment[],
   pathname?: string,
@@ -19,6 +20,7 @@ export function matchSegment(
   return null;
 }
 
+/** React hook that returns the matched retargeting segment name for the current path. */
 export function useRetargetingSegment(
   segments: RetargetingSegment[],
   pathname?: string,

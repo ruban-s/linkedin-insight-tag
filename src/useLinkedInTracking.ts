@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { trackEvent } from "./core";
 import type { TrackOptions } from "./types";
 
+/** React hook providing memoized conversion tracking methods. */
 export function useLinkedInTracking() {
   const track = useCallback(
     (conversionId: string, options?: TrackOptions) => {

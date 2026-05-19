@@ -9,6 +9,7 @@ function log(...args: unknown[]) {
   if (debugEnabled) console.log("[linkedin-insight-tag]", ...args);
 }
 
+/** Inject the LinkedIn Insight Tag script into the document head. */
 export function injectScript(
   partnerId: string | string[],
   debug = false,
@@ -54,6 +55,7 @@ export function injectScript(
   log("script injected");
 }
 
+/** Fire a conversion event with optional value, currency, and dedup ID. */
 export function trackEvent(
   conversionId: string,
   options?: TrackOptions,
@@ -70,12 +72,14 @@ export function trackEvent(
   log("track:", data);
 }
 
+/** Set a page-level event ID for Conversions API deduplication. */
 export function setPageEventId(eventId: string): void {
   if (typeof window === "undefined") return;
   window._linkedin_event_id = eventId;
   log("page event ID set:", eventId);
 }
 
+/** Check whether the LinkedIn CDN script has fully loaded. */
 export function isLoaded(): boolean {
   return (
     typeof window !== "undefined" &&
@@ -84,6 +88,7 @@ export function isLoaded(): boolean {
   );
 }
 
+/** Test whether the current pathname matches any excluded path patterns. */
 export function isPathExcluded(excludePaths: string[]): boolean {
   if (typeof window === "undefined") return false;
   const path = window.location.pathname;
@@ -95,6 +100,7 @@ export function isPathExcluded(excludePaths: string[]): boolean {
   });
 }
 
+/** SHA-256 hash an email address for LinkedIn Matched Audiences. */
 export async function hashEmail(email: string): Promise<string> {
   const normalized = email.trim().toLowerCase();
   const encoder = new TextEncoder();

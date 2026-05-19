@@ -9,5 +9,5 @@ export default defineConfig({
   dts: true,
   external: ["react", "next", "next/script"],
   clean: true,
-  sourcemap: true,
+  sourcemap: false,
 });
