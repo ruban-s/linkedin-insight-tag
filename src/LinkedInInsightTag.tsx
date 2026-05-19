@@ -22,6 +22,15 @@ export function LinkedInInsightTag({
       window._linkedin_data_partner_ids.push(partnerId);
     }
 
+    if (!window.lintrk) {
+      window.lintrk = Object.assign(
+        (a: string, b: Record<string, string>) => {
+          window.lintrk!.q!.push([a, b]);
+        },
+        { q: [] as unknown[][] },
+      );
+    }
+
     if (document.getElementById(SCRIPT_ID)) return;
 
     const script = document.createElement("script");
