@@ -1,24 +1,20 @@
 # linkedin-insight-tag
 
-Lightweight React component and hook for LinkedIn Insight Tag with TypeScript support, SSR safety, and SPA route tracking.
+Lightweight LinkedIn Insight Tag for React and vanilla JS. TypeScript-first, SSR-safe, zero dependencies.
 
 ## Install
 
 ```bash
 npm install linkedin-insight-tag
-```
-
-```bash
+# or
 yarn add linkedin-insight-tag
-```
-
-```bash
+# or
 pnpm add linkedin-insight-tag
 ```
 
-## Quick Start
+## React — Quick Start
 
-Add the component once in your app root (e.g., `App.tsx` or `layout.tsx`):
+Add the component once in your app root:
 
 ```tsx
 import { LinkedInInsightTag } from "linkedin-insight-tag";
@@ -33,11 +29,34 @@ function App() {
 }
 ```
 
-This injects the LinkedIn tracking script and renders a noscript fallback pixel.
+### Multiple Partner IDs
+
+```tsx
+<LinkedInInsightTag partnerId={["123456", "789012"]} />
+```
+
+### GDPR Consent Mode
+
+Defer script loading until user consents:
+
+```tsx
+const [consent, setConsent] = useState(false);
+
+<LinkedInInsightTag partnerId="123456" consent={consent} />
+<button onClick={() => setConsent(true)}>Accept Cookies</button>
+```
+
+No script loads, no cookies set, no noscript pixel rendered until `consent` is `true`.
+
+### Debug Mode
+
+```tsx
+<LinkedInInsightTag partnerId="123456" debug />
+```
+
+Logs all tracking calls to console: `[linkedin-insight-tag] track: { conversion_id: "..." }`
 
 ## Conversion Tracking
-
-Use the `useLinkedInTracking` hook to fire conversion events:
 
 ```tsx
 import { useLinkedInTracking } from "linkedin-insight-tag";
@@ -53,9 +72,19 @@ function SignupButton() {
 }
 ```
 
-## SPA Page View Tracking
+### With Value and Currency
 
-Track page views on route changes in single-page apps:
+```tsx
+track("PURCHASE_CONV_ID", { value: 99.99, currency: "USD" });
+```
+
+### With Event ID (for CAPI Deduplication)
+
+```tsx
+track("CONV_ID", { eventId: "unique-event-id-123" });
+```
+
+## SPA Page View Tracking
 
 ```tsx
 import { useLinkedInPageView } from "linkedin-insight-tag";
@@ -63,14 +92,26 @@ import { useLocation } from "react-router-dom";
 
 function PageViewTracker() {
   const { pathname } = useLocation();
-
-  useLinkedInPageView({
-    conversionId: "YOUR_PAGE_VIEW_CONVERSION_ID",
-    pathname,
-  });
-
+  useLinkedInPageView({ conversionId: "PAGE_VIEW_CONV_ID", pathname });
   return null;
 }
+```
+
+## Imperative API (Vanilla JS / Vue / Svelte / Any Framework)
+
+```ts
+import { LinkedInTag } from "linkedin-insight-tag";
+
+// Initialize
+LinkedInTag.init({ partnerId: "123456", debug: true });
+
+// Track conversions
+LinkedInTag.track("CONV_ID");
+LinkedInTag.track("CONV_ID", { value: 49.99, currency: "EUR" });
+LinkedInTag.track("CONV_ID", { eventId: "dedup-id-123" });
+
+// Check if CDN script loaded
+LinkedInTag.isLoaded(); // boolean
 ```
 
 ## API Reference
@@ -79,23 +120,41 @@ function PageViewTracker() {
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `partnerId` | `string` | *required* | Your LinkedIn Partner ID |
+| `partnerId` | `string \| string[]` | *required* | LinkedIn Partner ID(s) |
 | `noscript` | `boolean` | `true` | Render noscript img fallback |
+| `consent` | `boolean` | `true` | Defer loading until `true` (GDPR) |
+| `debug` | `boolean` | `false` | Log tracking calls to console |
 
 ### `useLinkedInTracking()`
 
-Returns `{ track }` where `track(conversionId: string)` fires a LinkedIn conversion event.
+Returns `{ track }`:
+
+```ts
+track(conversionId: string, options?: {
+  eventId?: string;   // for CAPI deduplication
+  value?: number;     // conversion value
+  currency?: string;  // ISO currency code
+})
+```
 
 ### `useLinkedInPageView(options)`
 
 | Option | Type | Description |
 |--------|------|-------------|
 | `conversionId` | `string` | Conversion ID for page view events |
-| `pathname` | `string?` | Current route pathname. Pass from your router to trigger on navigation. |
+| `pathname` | `string?` | Current route pathname |
+
+### `LinkedInTag` (Imperative)
+
+| Method | Description |
+|--------|-------------|
+| `init(config)` | Inject script and register partner ID(s) |
+| `track(id, opts?)` | Fire conversion event |
+| `isLoaded()` | Check if CDN script has fully loaded |
 
 ## SSR / Next.js
 
-All browser APIs are guarded with `typeof window` checks. Safe to use in Next.js App Router or Pages Router, Remix, Gatsby, or any SSR framework. Place `<LinkedInInsightTag />` in your root layout.
+All browser APIs guarded with `typeof window` checks. Safe in Next.js, Remix, Gatsby, or any SSR framework.
 
 ## License
 

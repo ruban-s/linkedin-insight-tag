@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { UseLinkedInPageViewOptions } from "./types";
+import { trackEvent } from "./core";
 
 export function useLinkedInPageView({
   conversionId,
@@ -16,8 +17,6 @@ export function useLinkedInPageView({
     if (previousPathnameRef.current === currentPathname) return;
     previousPathnameRef.current = currentPathname;
 
-    if (window.lintrk) {
-      window.lintrk("track", { conversion_id: conversionId });
-    }
+    trackEvent(conversionId);
   }, [conversionId, pathname]);
 }
