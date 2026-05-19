@@ -10,11 +10,13 @@ export {
   trackLead,
   hashEmail,
 } from "./events";
-export { setPageEventId, isLoaded } from "./core";
+export { injectScript, setPageEventId, isLoaded, isPathExcluded, trackEvent } from "./core";
+export { matchSegment, useRetargetingSegment } from "./retargeting";
 export type {
   LinkedInInsightTagProps,
   LinkedInTagConfig,
   LinkedInTrackingOptions,
   TrackOptions,
   UseLinkedInPageViewOptions,
+  RetargetingSegment,
 } from "./types";

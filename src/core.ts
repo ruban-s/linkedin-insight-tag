@@ -64,6 +64,7 @@ export function trackEvent(
   if (options?.eventId) data.event_id = options.eventId;
   if (options?.value !== undefined) data.value = String(options.value);
   if (options?.currency) data.currency = options.currency;
+  if (options?.variant) data.variant = options.variant;
 
   window.lintrk("track", data);
   log("track:", data);

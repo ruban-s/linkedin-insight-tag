@@ -11,6 +11,7 @@ export interface TrackOptions {
   eventId?: string;
   value?: number;
   currency?: string;
+  variant?: string;
 }
 
 export interface LinkedInTrackingOptions {
@@ -29,6 +30,11 @@ export interface LinkedInTagConfig {
   partnerId: string | string[];
   debug?: boolean;
   onLoad?: () => void;
+}
+
+export interface RetargetingSegment {
+  name: string;
+  paths: string[];
 }
 
 declare global {

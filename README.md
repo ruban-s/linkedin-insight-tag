@@ -109,6 +109,15 @@ trackLead("LEAD_ID", { value: 50, currency: "EUR" });
 trackDownload("DOWNLOAD_ID");
 ```
 
+### A/B Variant Tracking
+
+Pass experiment variant data with any conversion:
+
+```tsx
+track("CONV_ID", { variant: "B" });
+trackPurchase("CONV_ID", { value: 99, currency: "USD", variant: "checkout-v2" });
+```
+
 ### With Event ID (CAPI Deduplication)
 
 ```tsx
@@ -125,6 +134,30 @@ import { setPageEventId } from "linkedin-insight-tag";
 setPageEventId("unique-page-load-id");
 ```
 
+## Retargeting Segments
+
+Define URL-based audience segments and match visitors:
+
+```tsx
+import { matchSegment, useRetargetingSegment } from "linkedin-insight-tag";
+
+const segments = [
+  { name: "high-intent", paths: ["/pricing", "/demo", "/contact"] },
+  { name: "blog-readers", paths: ["/blog/*"] },
+  { name: "product-interest", paths: ["/features/*", "/integrations/*"] },
+];
+
+// React hook
+function MyComponent() {
+  const { pathname } = useLocation();
+  const segment = useRetargetingSegment(segments, pathname);
+  // segment = "high-intent" | "blog-readers" | null
+}
+
+// Imperative
+const segment = matchSegment(segments, "/pricing"); // "high-intent"
+```
+
 ## Email Hashing
 
 SHA-256 hash emails for LinkedIn Matched Audiences:
@@ -133,7 +166,6 @@ SHA-256 hash emails for LinkedIn Matched Audiences:
 import { hashEmail } from "linkedin-insight-tag";
 
 const hashed = await hashEmail("user@example.com");
-// "b4c9a289323b21a01c3e940f150eb9b8c542587f1abfd8f0e1cc1ffc5e475514"
 ```
 
 Auto-normalizes (trim + lowercase) before hashing.
@@ -148,6 +180,29 @@ function PageViewTracker() {
   const { pathname } = useLocation();
   useLinkedInPageView({ conversionId: "PAGE_VIEW_CONV_ID", pathname });
   return null;
+}
+```
+
+## Next.js
+
+Optimized component using `next/script` with `afterInteractive` strategy:
+
+```tsx
+import { LinkedInInsightScript } from "linkedin-insight-tag/next";
+import Script from "next/script";
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <LinkedInInsightScript
+          partnerId="123456"
+          ScriptComponent={Script}
+        />
+      </body>
+    </html>
+  );
 }
 ```
 
@@ -171,9 +226,15 @@ LinkedInTag.trackFormSubmit("CONV_ID");
 LinkedInTag.trackLead("CONV_ID");
 LinkedInTag.trackDownload("CONV_ID");
 
+// A/B testing
+LinkedInTag.track("CONV_ID", { variant: "B" });
+
 // CAPI deduplication
 LinkedInTag.track("CONV_ID", { eventId: "dedup-id-123" });
 LinkedInTag.setPageEventId("page-load-dedup-id");
+
+// Retargeting
+LinkedInTag.matchSegment(segments, "/pricing");
 
 // Utilities
 LinkedInTag.isLoaded();
@@ -213,6 +274,7 @@ Returns:
 | `eventId` | `string?` | For CAPI deduplication |
 | `value` | `number?` | Conversion value |
 | `currency` | `string?` | ISO currency code |
+| `variant` | `string?` | A/B test variant identifier |
 
 ### Standalone Functions
 
@@ -221,14 +283,12 @@ Returns:
 | `setPageEventId(id)` | Set `window._linkedin_event_id` for page load dedup |
 | `isLoaded()` | Check if CDN script has fully loaded |
 | `hashEmail(email)` | SHA-256 hash (returns Promise) |
+| `matchSegment(segments, pathname?)` | Match current path to retargeting segment |
+| `useRetargetingSegment(segments, pathname?)` | React hook for segment matching |
 
 ### `LinkedInTag` (Imperative)
 
 Full imperative API with all methods above plus `init(config)`.
-
-## SSR / Next.js
-
-All browser APIs guarded with `typeof window` checks. Safe in Next.js, Remix, Gatsby, or any SSR framework.
 
 ## License
 

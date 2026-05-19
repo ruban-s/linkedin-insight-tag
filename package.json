@@ -1,6 +1,6 @@
 {
   "name": "linkedin-insight-tag",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Lightweight React component and hook for LinkedIn Insight Tag with TypeScript support, SSR safety, and SPA route tracking",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
@@ -15,6 +15,16 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.cjs.js"
       }
+    },
+    "./next": {
+      "import": {
+        "types": "./dist/next.d.ts",
+        "default": "./dist/next.esm.js"
+      },
+      "require": {
+        "types": "./dist/next.d.ts",
+        "default": "./dist/next.cjs.js"
+      }
     }
   },
   "files": [
@@ -22,15 +32,19 @@
   ],
   "scripts": {
     "build": "tsup",
+    "test": "node --no-warnings --test tests/",
     "prepublishOnly": "pnpm run build"
   },
   "keywords": [
     "linkedin",
     "insight-tag",
     "react",
+    "nextjs",
     "analytics",
     "tracking",
     "conversion",
+    "retargeting",
+    "gdpr",
     "typescript"
   ],
   "author": "ruban-s",
@@ -40,7 +54,13 @@
     "url": "https://github.com/ruban-s/linkedin-insight-tag.git"
   },
   "peerDependencies": {
-    "react": ">=16.8.0"
+    "react": ">=16.8.0",
+    "next": ">=13.0.0"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

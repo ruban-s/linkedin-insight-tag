@@ -6,6 +6,7 @@ import {
   isLoaded,
   hashEmail,
 } from "./core";
+import { matchSegment } from "./retargeting";
 
 export const LinkedInTag = {
   init(config: LinkedInTagConfig): void {
@@ -42,4 +43,5 @@ export const LinkedInTag = {
   setPageEventId,
   isLoaded,
   hashEmail,
+  matchSegment,
 };
