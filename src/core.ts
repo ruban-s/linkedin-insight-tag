@@ -1,3 +1,5 @@
+import type { TrackOptions } from "./types";
+
 const SCRIPT_URL = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
 const SCRIPT_ID = "linkedin-insight-tag-script";
 
@@ -10,6 +12,7 @@ function log(...args: unknown[]) {
 export function injectScript(
   partnerId: string | string[],
   debug = false,
+  onLoad?: () => void,
 ): void {
   if (typeof window === "undefined" || typeof document === "undefined") return;
 
@@ -41,13 +44,19 @@ export function injectScript(
   script.src = SCRIPT_URL;
   script.async = true;
   script.type = "text/javascript";
+  if (onLoad) {
+    script.onload = () => {
+      log("CDN script loaded");
+      onLoad();
+    };
+  }
   document.head.appendChild(script);
   log("script injected");
 }
 
 export function trackEvent(
   conversionId: string,
-  options?: { eventId?: string; value?: number; currency?: string },
+  options?: TrackOptions,
 ): void {
   if (typeof window === "undefined" || !window.lintrk) return;
 
@@ -60,10 +69,36 @@ export function trackEvent(
   log("track:", data);
 }
 
+export function setPageEventId(eventId: string): void {
+  if (typeof window === "undefined") return;
+  window._linkedin_event_id = eventId;
+  log("page event ID set:", eventId);
+}
+
 export function isLoaded(): boolean {
   return (
     typeof window !== "undefined" &&
     !!window.lintrk &&
     !window.lintrk.q
   );
+}
+
+export function isPathExcluded(excludePaths: string[]): boolean {
+  if (typeof window === "undefined") return false;
+  const path = window.location.pathname;
+  return excludePaths.some((pattern) => {
+    if (pattern.endsWith("*")) {
+      return path.startsWith(pattern.slice(0, -1));
+    }
+    return path === pattern;
+  });
+}
+
+export async function hashEmail(email: string): Promise<string> {
+  const normalized = email.trim().toLowerCase();
+  const encoder = new TextEncoder();
+  const data = encoder.encode(normalized);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }

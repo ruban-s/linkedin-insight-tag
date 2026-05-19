@@ -48,13 +48,35 @@ const [consent, setConsent] = useState(false);
 
 No script loads, no cookies set, no noscript pixel rendered until `consent` is `true`.
 
+### Sensitive Page Exclusion
+
+Exclude health, financial, or other sensitive pages per LinkedIn's terms:
+
+```tsx
+<LinkedInInsightTag
+  partnerId="123456"
+  excludePaths={["/account/*", "/health/*", "/checkout/payment"]}
+/>
+```
+
+Supports exact paths and wildcard prefix matching (`/admin/*` matches `/admin/users`).
+
+### onLoad Callback
+
+```tsx
+<LinkedInInsightTag
+  partnerId="123456"
+  onLoad={() => console.log("LinkedIn pixel ready")}
+/>
+```
+
 ### Debug Mode
 
 ```tsx
 <LinkedInInsightTag partnerId="123456" debug />
 ```
 
-Logs all tracking calls to console: `[linkedin-insight-tag] track: { conversion_id: "..." }`
+Logs all tracking calls: `[linkedin-insight-tag] track: { conversion_id: "..." }`
 
 ## Conversion Tracking
 
@@ -72,17 +94,49 @@ function SignupButton() {
 }
 ```
 
-### With Value and Currency
+### Event Helpers
+
+Typed convenience methods for common conversion types:
 
 ```tsx
-track("PURCHASE_CONV_ID", { value: 99.99, currency: "USD" });
+const { trackPurchase, trackSignup, trackFormSubmit, trackLead, trackDownload } =
+  useLinkedInTracking();
+
+trackPurchase("PURCHASE_ID", { value: 99.99, currency: "USD" });
+trackSignup("SIGNUP_ID");
+trackFormSubmit("FORM_ID");
+trackLead("LEAD_ID", { value: 50, currency: "EUR" });
+trackDownload("DOWNLOAD_ID");
 ```
 
-### With Event ID (for CAPI Deduplication)
+### With Event ID (CAPI Deduplication)
 
 ```tsx
 track("CONV_ID", { eventId: "unique-event-id-123" });
 ```
+
+### Page-Level Event ID
+
+For page load conversion deduplication with LinkedIn's Conversions API:
+
+```tsx
+import { setPageEventId } from "linkedin-insight-tag";
+
+setPageEventId("unique-page-load-id");
+```
+
+## Email Hashing
+
+SHA-256 hash emails for LinkedIn Matched Audiences:
+
+```tsx
+import { hashEmail } from "linkedin-insight-tag";
+
+const hashed = await hashEmail("user@example.com");
+// "b4c9a289323b21a01c3e940f150eb9b8c542587f1abfd8f0e1cc1ffc5e475514"
+```
+
+Auto-normalizes (trim + lowercase) before hashing.
 
 ## SPA Page View Tracking
 
@@ -97,21 +151,33 @@ function PageViewTracker() {
 }
 ```
 
-## Imperative API (Vanilla JS / Vue / Svelte / Any Framework)
+## Imperative API (Vanilla JS / Vue / Svelte)
 
 ```ts
 import { LinkedInTag } from "linkedin-insight-tag";
 
 // Initialize
-LinkedInTag.init({ partnerId: "123456", debug: true });
+LinkedInTag.init({
+  partnerId: "123456",
+  debug: true,
+  onLoad: () => console.log("ready"),
+});
 
 // Track conversions
 LinkedInTag.track("CONV_ID");
-LinkedInTag.track("CONV_ID", { value: 49.99, currency: "EUR" });
-LinkedInTag.track("CONV_ID", { eventId: "dedup-id-123" });
+LinkedInTag.trackPurchase("CONV_ID", { value: 49.99, currency: "EUR" });
+LinkedInTag.trackSignup("CONV_ID");
+LinkedInTag.trackFormSubmit("CONV_ID");
+LinkedInTag.trackLead("CONV_ID");
+LinkedInTag.trackDownload("CONV_ID");
 
-// Check if CDN script loaded
-LinkedInTag.isLoaded(); // boolean
+// CAPI deduplication
+LinkedInTag.track("CONV_ID", { eventId: "dedup-id-123" });
+LinkedInTag.setPageEventId("page-load-dedup-id");
+
+// Utilities
+LinkedInTag.isLoaded();
+const hashed = await LinkedInTag.hashEmail("user@example.com");
 ```
 
 ## API Reference
@@ -124,33 +190,41 @@ LinkedInTag.isLoaded(); // boolean
 | `noscript` | `boolean` | `true` | Render noscript img fallback |
 | `consent` | `boolean` | `true` | Defer loading until `true` (GDPR) |
 | `debug` | `boolean` | `false` | Log tracking calls to console |
+| `onLoad` | `() => void` | — | Callback when CDN script loads |
+| `excludePaths` | `string[]` | — | Paths where tag should not load |
 
 ### `useLinkedInTracking()`
 
-Returns `{ track }`:
+Returns:
 
-```ts
-track(conversionId: string, options?: {
-  eventId?: string;   // for CAPI deduplication
-  value?: number;     // conversion value
-  currency?: string;  // ISO currency code
-})
-```
+| Method | Signature |
+|--------|-----------|
+| `track` | `(conversionId, options?) => void` |
+| `trackPurchase` | `(conversionId, { value, currency, ...opts }) => void` |
+| `trackSignup` | `(conversionId, options?) => void` |
+| `trackFormSubmit` | `(conversionId, options?) => void` |
+| `trackLead` | `(conversionId, options?) => void` |
+| `trackDownload` | `(conversionId, options?) => void` |
 
-### `useLinkedInPageView(options)`
+### `TrackOptions`
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `conversionId` | `string` | Conversion ID for page view events |
-| `pathname` | `string?` | Current route pathname |
+| Field | Type | Description |
+|-------|------|-------------|
+| `eventId` | `string?` | For CAPI deduplication |
+| `value` | `number?` | Conversion value |
+| `currency` | `string?` | ISO currency code |
+
+### Standalone Functions
+
+| Function | Description |
+|----------|-------------|
+| `setPageEventId(id)` | Set `window._linkedin_event_id` for page load dedup |
+| `isLoaded()` | Check if CDN script has fully loaded |
+| `hashEmail(email)` | SHA-256 hash (returns Promise) |
 
 ### `LinkedInTag` (Imperative)
 
-| Method | Description |
-|--------|-------------|
-| `init(config)` | Inject script and register partner ID(s) |
-| `track(id, opts?)` | Fire conversion event |
-| `isLoaded()` | Check if CDN script has fully loaded |
+Full imperative API with all methods above plus `init(config)`.
 
 ## SSR / Next.js
 

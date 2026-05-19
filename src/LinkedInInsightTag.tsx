@@ -1,12 +1,14 @@
 import { useEffect, useRef } from "react";
 import type { LinkedInInsightTagProps } from "./types";
-import { injectScript } from "./core";
+import { injectScript, isPathExcluded } from "./core";
 
 export function LinkedInInsightTag({
   partnerId,
   noscript = true,
   consent = true,
   debug = false,
+  onLoad,
+  excludePaths,
 }: LinkedInInsightTagProps) {
   const injectedRef = useRef(false);
 
@@ -15,12 +17,15 @@ export function LinkedInInsightTag({
     if (injectedRef.current) return;
     if (typeof window === "undefined" || typeof document === "undefined")
       return;
+    if (excludePaths && isPathExcluded(excludePaths)) return;
 
     injectedRef.current = true;
-    injectScript(partnerId, debug);
-  }, [partnerId, consent, debug]);
+    injectScript(partnerId, debug, onLoad);
+  }, [partnerId, consent, debug, onLoad, excludePaths]);
 
   if (!consent || !noscript) return null;
+  if (typeof window !== "undefined" && excludePaths && isPathExcluded(excludePaths))
+    return null;
 
   const ids = Array.isArray(partnerId) ? partnerId : [partnerId];
 

@@ -3,6 +3,14 @@ export interface LinkedInInsightTagProps {
   noscript?: boolean;
   consent?: boolean;
   debug?: boolean;
+  onLoad?: () => void;
+  excludePaths?: string[];
+}
+
+export interface TrackOptions {
+  eventId?: string;
+  value?: number;
+  currency?: string;
 }
 
 export interface LinkedInTrackingOptions {
@@ -20,6 +28,7 @@ export interface UseLinkedInPageViewOptions {
 export interface LinkedInTagConfig {
   partnerId: string | string[];
   debug?: boolean;
+  onLoad?: () => void;
 }
 
 declare global {
