@@ -1,0 +1,51 @@
+{
+  "name": "linkedin-insight-tag",
+  "version": "1.0.0",
+  "description": "Lightweight React component and hook for LinkedIn Insight Tag with TypeScript support, SSR safety, and SPA route tracking",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.esm.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs.js"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "pnpm run build"
+  },
+  "keywords": [
+    "linkedin",
+    "insight-tag",
+    "react",
+    "analytics",
+    "tracking",
+    "conversion",
+    "typescript"
+  ],
+  "author": "EventJar",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eventjar/linkedin-insight-tag"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.5.0"
+  }
+}
