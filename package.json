@@ -1,6 +1,6 @@
 {
   "name": "linkedin-insight-tag",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Lightweight React component and hook for LinkedIn Insight Tag with TypeScript support, SSR safety, and SPA route tracking",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
@@ -57,7 +57,9 @@
     "react": ">=16.8.0"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
